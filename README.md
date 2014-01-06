@@ -34,4 +34,3 @@ Usage: fda [opts] train1 test1 [train2] [test2]\n"
   "final feature score  : fscore1 = fscore0 * d^cnt * cnt^(-c)\n"
   "sentence score       : sscore  = sum_fscore1 * slen^(-s)\n"
   
-  
