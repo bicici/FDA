@@ -172,7 +172,12 @@ static GHashTable *init_features(GPtrArray *sent, guint *bigram_cnt) {
 	feat_t f = (feat_t) minialloc(sizeof(struct feat_s));
 	f->output_cnt = 0; f->train_cnt = 0; f->logscore0 = 0; f->logscore1 = 0;
 	g_hash_table_insert(feats, ngram_dup(ng), f);
-	if (ngram_size(ng) == 2) (*bigram_cnt)++;
+	if (ngram_order > 1) {
+	  if (ngram_size(ng) == 2) (*bigram_cnt)++;
+	}
+	else {
+	  if (ngram_size(ng) == 1) (*bigram_cnt)++;
+	}
       }
     }
   }
@@ -271,7 +276,10 @@ static guint update_counts(GHashTable *feat, Sentence s) {
   foreach_ngram(ng, s) {
     feat_t f = (feat_t) g_hash_table_lookup(feat, ng);
     if (f != NULL) {
-      if ((ngram_size(ng) == 2) && (f->output_cnt == 0)) bigram_match++;
+      if ((ngram_order > 1) && (ngram_size(ng) == 2) && (f->output_cnt == 0)) 
+	bigram_match++;
+      else if ((ngram_order == 1) && (ngram_size(ng) == 1) && (f->output_cnt == 0)) 
+	bigram_match++;
       f->output_cnt++;
       f->logscore1 = f->logscore0 + f->output_cnt * log(decay_factor) - decay_exponent * log(1.0 + f->output_cnt);
     }
